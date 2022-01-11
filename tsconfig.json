@@ -11,6 +11,12 @@
     "noImplicitReturns": true,
     "noFallthroughCasesInSwitch": true,
     "sourceMap": true,
+    "paths": {
+      "ngx-html5-qrcode": [
+        "dist/ngx-html5-qrcode/ngx-html5-qrcode",
+        "dist/ngx-html5-qrcode"
+      ]
+    },
     "declaration": false,
     "downlevelIteration": true,
     "experimentalDecorators": true,
