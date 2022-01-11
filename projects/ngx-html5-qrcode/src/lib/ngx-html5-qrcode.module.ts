@@ -1,16 +1,15 @@
-import { NgModule } from '@angular/core';
-import { NgxHtml5QrcodeComponent } from './ngx-html5-qrcode.component';
-
+import {NgModule} from '@angular/core';
+import {NgxHtml5QrcodeComponent} from './ngx-html5-qrcode.component';
 
 
 @NgModule({
   declarations: [
     NgxHtml5QrcodeComponent
   ],
-  imports: [
-  ],
+  imports: [],
   exports: [
     NgxHtml5QrcodeComponent
   ]
 })
-export class NgxHtml5QrcodeModule { }
+export class NgxHtml5QrcodeModule {
+}
