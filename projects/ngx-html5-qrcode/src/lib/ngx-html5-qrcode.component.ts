@@ -7,9 +7,12 @@ import {
   Renderer2,
   ViewChild,
   Output,
+  Input,
   EventEmitter
 } from '@angular/core';
 import {Html5Qrcode} from "html5-qrcode";
+import {Html5QrcodeCameraScanConfig} from "html5-qrcode/esm/html5-qrcode";
+import {Html5QrcodeResult} from "html5-qrcode/esm/core";
 
 @Component({
   selector: 'html5-qrcode',
@@ -23,7 +26,11 @@ export class NgxHtml5QrcodeComponent implements OnInit, AfterViewInit, OnDestroy
   @ViewChild('reader') reader: ElementRef | undefined;
   html5QrCode!: Html5Qrcode;
   cameraId: string = '';
-  @Output() scannedQrCode: EventEmitter<string> = new EventEmitter<string>();
+
+  @Input() useFrontCamera: boolean = false;
+  @Input() config: Html5QrcodeCameraScanConfig = {fps: 10, qrbox: {width: 250, height: 250}};
+  @Output() decodedText: EventEmitter<string> = new EventEmitter<string>();
+  @Output() decodedResult: EventEmitter<Html5QrcodeResult> = new EventEmitter<Html5QrcodeResult>();
 
   constructor() {
   }
@@ -32,13 +39,12 @@ export class NgxHtml5QrcodeComponent implements OnInit, AfterViewInit, OnDestroy
   }
 
   ngAfterViewInit() {
-    console.log(this.reader);
 
     // This method will trigger user permissions
     Html5Qrcode.getCameras().then(devices => {
       if (devices && devices.length) {
         // .. use this to start scanning.
-        this.cameraId = devices[0].id;
+        this.cameraId = this.useFrontCamera ? devices[1].id : devices[0].id;
         this.startHtmlQrCode();
       }
     }).catch(err => {
@@ -46,24 +52,28 @@ export class NgxHtml5QrcodeComponent implements OnInit, AfterViewInit, OnDestroy
     });
   }
 
+  qrCodeSuccessCallback(decodedText: any, decodedResult: Html5QrcodeResult) {
+    /* handle success */
+    this.decodedText.emit(decodedText);
+    this.decodedResult.emit(decodedResult);
+  }
+
+  qrCodeErrorCallback(errorMessage: any) {
+    /* handle success */
+    console.error(errorMessage);
+  }
+
   startHtmlQrCode() {
     this.html5QrCode = new Html5Qrcode(this.reader?.nativeElement?.id);
 
     this.html5QrCode.start(
-      this.cameraId,
-      {
-        fps: 10,    // Optional, frame per seconds for qr code scanning
-        qrbox: {width: 250, height: 250}  // Optional, if you want bounded box UI
-      },
-      (decodedText, decodedResult) => {
-        // do something when code is read
-        this.scannedQrCode.emit(decodedText);
-      },
-      (errorMessage) => {
-        // parse error, ignore it.
-      })
+      {deviceId: {exact: this.cameraId}},
+      this.config,
+      this.qrCodeSuccessCallback,
+      this.qrCodeErrorCallback)
       .catch((err) => {
         // Start failed, handle it.
+        console.log(err);
       });
   }
 
