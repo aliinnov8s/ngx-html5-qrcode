@@ -69,8 +69,8 @@ export class NgxHtml5QrcodeComponent implements OnInit, AfterViewInit, OnDestroy
     this.html5QrCode.start(
       {deviceId: {exact: this.cameraId}},
       this.config,
-      this.qrCodeSuccessCallback,
-      this.qrCodeErrorCallback)
+      this.qrCodeSuccessCallback.bind(this),
+      this.qrCodeErrorCallback.bind(this))
       .catch((err) => {
         // Start failed, handle it.
         console.log(err);
