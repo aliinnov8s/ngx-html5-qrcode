@@ -1,0 +1,25 @@
+name: Build and Publish to npm
+
+on:
+  push:
+    branches:
+      - main  # Or your default branch
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Use Node.js
+      uses: actions/setup-node@v2
+      with:
+        node-version: '14' # Specify your Node.js version
+        registry-url: 'https://registry.npmjs.org'
+    - name: Install Dependencies
+      run: npm install
+    - name: Build Library
+      run: npm run build -- --prod
+    - name: Publish to npm
+      run: npm publish
+      env:
+        NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
